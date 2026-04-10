@@ -469,7 +469,9 @@ function doLogin(){
   else document.getElementById("lerr").style.display="block";
 }
 function openAdmin(){document.getElementById("adm").classList.add("show");populateForms();}
-function closeAdmin(){document.getElementById("adm").classList.remove("show");renderContact();renderHours();renderAbout();renderGallery();}
+function closeAdmin(){document.getElementById("adm").classList.remove("show");renderContact();renderHours();renderAbout();renderGallery();
+// Acces admin via ?admin dans l'URL
+if(window.location.search.includes("admin")){showLogin();}}
 function switchTab(n,btn){
   document.querySelectorAll(".ap2").forEach(p=>p.classList.remove("on"));
   document.querySelectorAll(".atab").forEach(b=>b.classList.remove("on"));
@@ -519,6 +521,8 @@ function savePwd(){
   sd("password",p1);document.getElementById("np1").value="";document.getElementById("np2").value="";toast("Mot de passe mis a jour !");
 }
 renderContact();renderHours();renderAbout();renderGallery();
+// Acces admin via ?admin dans l'URL
+if(window.location.search.includes("admin")){showLogin();}
 </script>
 </body>
 </html>

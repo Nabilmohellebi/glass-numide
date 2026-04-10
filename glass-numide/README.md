@@ -22,7 +22,7 @@
 
 ## Accès Admin
 - Cliquez le ⚙ en bas du site (footer)
-- Mot de passe par défaut : **GlassNumide2024**
+- Mot de passe par défaut : 222222
 
 ## Ce que vous pouvez modifier depuis l'Admin
 - 📷 Galerie : ajouter/supprimer des photos par URL

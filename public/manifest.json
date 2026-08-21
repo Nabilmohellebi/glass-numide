@@ -1,0 +1,9 @@
+{
+  "name": "Le Cadran — Suivi 150→100",
+  "short_name": "Cadran",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#131518",
+  "theme_color": "#131518",
+  "icons": []
+}

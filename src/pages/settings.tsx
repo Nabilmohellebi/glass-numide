@@ -2,7 +2,12 @@
 
 import { useRef, useState } from "react";
 import { Button, Panel, SectionTitle, useToast } from "../components/ui-kit";
-import { getState, replaceState, resetState, updateProfile, useStore } from "../lib/store";
+import { getState, replaceState, resetState, setReminders, updateProfile, useStore } from "../lib/store";
+import {
+  notificationPermission,
+  notificationsSupported,
+  requestNotificationPermission,
+} from "../lib/reminders";
 
 function SettingsPage() {
   const s = useStore();
@@ -80,6 +85,10 @@ function SettingsPage() {
         <Button onClick={saveProfile}>Enregistrer</Button>
       </Panel>
 
+      <Panel title="Rappels" delay={40}>
+        <RemindersBlock />
+      </Panel>
+
       <Panel title="Sauvegarde" delay={60}>
         <p className="mb-3 text-[12.5px] leading-relaxed text-ink-dim">
           Tes données vivent uniquement dans ce navigateur. Exporte-les régulièrement pour ne rien perdre si tu changes de
@@ -135,6 +144,100 @@ function SettingsPage() {
         )}
       </Panel>
     </>
+  );
+}
+
+function RemindersBlock() {
+  const s = useStore();
+  const { toast, node } = useToast();
+  const r = s.reminders;
+  const [perm, setPerm] = useState(notificationPermission());
+
+  if (!notificationsSupported()) {
+    return <p className="text-[12.5px] text-ink-faint">Les notifications ne sont pas prises en charge par ce navigateur.</p>;
+  }
+
+  const enable = async () => {
+    if (perm !== "granted") {
+      const res = await requestNotificationPermission();
+      setPerm(res);
+      if (res !== "granted") {
+        toast("Autorisation refusée");
+        return;
+      }
+    }
+    setReminders({ enabled: true });
+    toast("Rappels activés");
+  };
+
+  return (
+    <div>
+      {node}
+      {!r.enabled ? (
+        <div>
+          <p className="mb-3 text-[12.5px] leading-relaxed text-ink-dim">
+            Reçois une notification pour ta pesée, ton eau et ta séance — tant que l'app reste ouverte sur ton
+            téléphone (aucun serveur, tout est local).
+          </p>
+          <Button className="w-full" onClick={enable}>
+            Activer les rappels
+          </Button>
+        </div>
+      ) : (
+        <div className="flex flex-col gap-3">
+          <ToggleRow label="Pesée du matin" checked={r.weighIn} onChange={(v) => setReminders({ weighIn: v })}>
+            <input
+              type="time"
+              className="field w-auto text-[13px]"
+              value={r.weighInTime}
+              onChange={(e) => setReminders({ weighInTime: e.target.value })}
+            />
+          </ToggleRow>
+          <ToggleRow label="Eau" checked={r.water} onChange={(v) => setReminders({ water: v })}>
+            <span className="font-mono text-[11px] text-ink-faint">{r.waterTimes.join(" · ")}</span>
+          </ToggleRow>
+          <ToggleRow label="Séance du jour" checked={r.workout} onChange={(v) => setReminders({ workout: v })}>
+            <input
+              type="time"
+              className="field w-auto text-[13px]"
+              value={r.workoutTime}
+              onChange={(e) => setReminders({ workoutTime: e.target.value })}
+            />
+          </ToggleRow>
+          <Button variant="ghost" className="mt-1 w-full" onClick={() => setReminders({ enabled: false })}>
+            Désactiver tous les rappels
+          </Button>
+        </div>
+      )}
+    </div>
+  );
+}
+
+function ToggleRow({
+  label,
+  checked,
+  onChange,
+  children,
+}: {
+  label: string;
+  checked: boolean;
+  onChange: (v: boolean) => void;
+  children?: React.ReactNode;
+}) {
+  return (
+    <div className="flex items-center justify-between gap-3 border-b border-line pb-3 last:border-b-0 last:pb-0">
+      <button type="button" onClick={() => onChange(!checked)} className="flex items-center gap-2.5">
+        <span
+          className={`flex h-5 w-9 shrink-0 items-center rounded-full border transition ${
+            checked ? "justify-end border-accent bg-accent" : "justify-start border-line bg-surface-2"
+          } px-0.5`}
+        >
+          <span className={`h-3.5 w-3.5 rounded-full ${checked ? "bg-[#0a0a0b]" : "bg-ink-faint"}`} />
+        </span>
+        <span className="text-[13px] text-ink">{label}</span>
+      </button>
+      {children}
+    </div>
   );
 }
 

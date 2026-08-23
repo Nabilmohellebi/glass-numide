@@ -18,7 +18,7 @@ function GuidePage() {
         <ul className="space-y-2">
           {MUSCLE_RULES.map((r, i) => (
             <li key={i} className="flex gap-2.5 text-[13px] leading-relaxed text-ink-dim">
-              <span className="mt-1.5 inline-block h-1 w-1 shrink-0 rounded-full bg-ember" />
+              <span className="mt-1.5 inline-block h-1 w-1 shrink-0 rounded-full bg-accent" />
               {r}
             </li>
           ))}
@@ -41,10 +41,10 @@ function GuidePage() {
               {PHASES.map((p, i) => {
                 const on = p === active;
                 return (
-                  <tr key={i} className={on ? "bg-ember/10 text-ink" : "text-ink-dim"}>
+                  <tr key={i} className={on ? "bg-accent/10 text-ink" : "text-ink-dim"}>
                     <td className="px-2 py-1.5 text-left">
                       {p.max === 999 ? "150+" : p.min === 0 ? "< 100" : `${p.min}-${p.max}`}
-                      {on && <span className="ml-1 text-ember">•</span>}
+                      {on && <span className="ml-1 text-accent">•</span>}
                     </td>
                     <td className="px-1 py-1.5 text-right">{p.kcal}</td>
                     <td className="px-1 py-1.5 text-right">{p.prot}</td>
@@ -98,7 +98,7 @@ function Acc({ title, children }: { title: string; children: ReactNode }) {
     <div className="border-b border-line last:border-b-0">
       <button type="button" onClick={() => setOpen(!open)} className="flex w-full items-center justify-between gap-3 py-3 text-left">
         <span className="text-[13.5px] font-medium">{title}</span>
-        <span className={`font-mono text-[14px] text-ember transition-transform ${open ? "rotate-45" : ""}`}>+</span>
+        <span className={`font-mono text-[14px] text-accent transition-transform ${open ? "rotate-45" : ""}`}>+</span>
       </button>
       {open && <div className="fade-in pb-3.5 text-[12.5px] leading-relaxed text-ink-dim">{children}</div>}
     </div>
@@ -110,7 +110,7 @@ function List({ items, ordered }: { items: string[]; ordered?: boolean }) {
     <ol className="space-y-2">
       {items.map((x, i) => (
         <li key={i} className="flex gap-2.5">
-          <span className="shrink-0 font-mono text-[11px] text-ember">{ordered ? `${i + 1}.` : "—"}</span>
+          <span className="shrink-0 font-mono text-[11px] text-accent">{ordered ? `${i + 1}.` : "—"}</span>
           <span>{x}</span>
         </li>
       ))}

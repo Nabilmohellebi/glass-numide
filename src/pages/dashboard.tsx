@@ -4,7 +4,7 @@ import { useState } from "react";
 import { Link } from "wouter";
 import { Gauge } from "../components/gauge";
 import { Bar, Button, Panel, Plate, useToast } from "../components/ui-kit";
-import { addWater, setSteps, setWeight, todayISO, toggleCheck, useStore } from "../lib/store";
+import { addWater, setSteps, setWeight, setWellbeing, todayISO, toggleCheck, useStore } from "../lib/store";
 import {
   alerts,
   currentWeight,
@@ -19,6 +19,7 @@ import {
   stepTarget,
   weeklyRate,
 } from "../lib/calc";
+import { energyToday } from "../lib/energy";
 import { CHECKLIST, DAYS_FR, REST_KEYS, SPLITS, WATER_TARGET_L } from "../lib/program";
 
 function Dashboard() {
@@ -41,6 +42,8 @@ function Dashboard() {
   const stepGoal = stepTarget(s);
   const checks = s.checklists[iso] ?? {};
   const checkDone = Object.values(checks).filter(Boolean).length;
+  const energy = energyToday(s, iso);
+  const wb = s.wellbeing[iso] ?? { sleep: null, energy: null, stress: null };
 
   const dayName = DAYS_FR[new Date().getDay()]!;
   const split = SPLITS[s.split];
@@ -92,9 +95,9 @@ function Dashboard() {
           style={{
             animationDelay: `${60 + i * 40}ms`,
             borderColor:
-              a.level === "warn" ? "rgba(226,185,59,.35)" : a.level === "good" ? "rgba(79,174,123,.3)" : "var(--color-line)",
+              a.level === "warn" ? "rgba(240,196,106,.35)" : a.level === "good" ? "rgba(126,224,168,.3)" : "var(--color-line)",
             background:
-              a.level === "warn" ? "rgba(226,185,59,.07)" : a.level === "good" ? "rgba(79,174,123,.06)" : "var(--color-surface)",
+              a.level === "warn" ? "rgba(240,196,106,.07)" : a.level === "good" ? "rgba(126,224,168,.06)" : "var(--color-surface)",
             color: a.level === "warn" ? "#e2b93b" : a.level === "good" ? "#4fae7b" : "var(--color-ink-dim)",
           }}
         >
@@ -102,6 +105,26 @@ function Dashboard() {
           {a.text}
         </div>
       ))}
+
+      {energy && (
+        <div className="rise mb-3.5 grid grid-cols-2 gap-3" style={{ animationDelay: "60ms" }}>
+          <div className="panel p-4">
+            <div className="text-[10.5px] tracking-[0.08em] text-ink-faint uppercase">Dépense estimée</div>
+            <div className="display mt-1 text-[32px] leading-none">{Math.round(energy.totalOut)}</div>
+            <div className="font-mono text-[10.5px] text-ink-faint">kcal aujourd'hui</div>
+          </div>
+          <div className="panel p-4">
+            <div className="text-[10.5px] tracking-[0.08em] text-ink-faint uppercase">Déficit réel</div>
+            <div className={`display mt-1 text-[32px] leading-none ${energy.deficit >= 0 ? "text-good" : "text-bad"}`}>
+              {energy.deficit >= 0 ? "−" : "+"}
+              {Math.abs(Math.round(energy.deficit))}
+            </div>
+            <div className="font-mono text-[10.5px] text-ink-faint">
+              {Math.round(energy.intake)} kcal mangées / {Math.round(energy.totalOut)} brûlées
+            </div>
+          </div>
+        </div>
+      )}
 
       <Panel title="Pesée du matin" delay={80}>
         <div className="flex gap-2">
@@ -125,7 +148,7 @@ function Dashboard() {
         title="Nutrition du jour"
         delay={120}
         action={
-          <Link href="/nutrition" className="display text-[11px] tracking-[0.08em] text-ember">
+          <Link href="/nutrition" className="display text-[11px] tracking-[0.08em] text-accent">
             Journal →
           </Link>
         }
@@ -133,7 +156,7 @@ function Dashboard() {
         <Bar value={macros.kcal} max={phase.kcal} label="Calories" unit="kcal" />
         <Bar value={macros.prot} max={phase.prot} label="Protéines" unit="g" color="var(--color-good)" />
         <div className="mt-3 grid grid-cols-3 gap-2">
-          <Plate value={`${Math.max(0, Math.round(phase.kcal - macros.kcal))}`} label="kcal restantes" tone="ember" />
+          <Plate value={`${Math.max(0, Math.round(phase.kcal - macros.kcal))}`} label="kcal restantes" tone="accent" />
           <Plate value={`${Math.round(macros.carbs)}/${phase.carbs}`} label="glucides g" />
           <Plate value={`${Math.round(macros.fat)}/${phase.fat}`} label="lipides g" />
         </div>
@@ -143,7 +166,7 @@ function Dashboard() {
         title="Séance du jour"
         delay={160}
         action={
-          <Link href="/seance" className="display text-[11px] tracking-[0.08em] text-ember">
+          <Link href="/seance" className="display text-[11px] tracking-[0.08em] text-accent">
             Ouvrir →
           </Link>
         }
@@ -192,7 +215,7 @@ function Dashboard() {
             −
           </Button>
         </div>
-        <Bar value={steps} max={stepGoal} label="Pas" unit="pas" color="var(--color-steel)" />
+        <Bar value={steps} max={stepGoal} label="Pas" unit="pas" color="var(--color-ink-dim)" />
         <input
           className="field mt-2 text-[14px]"
           type="number"
@@ -216,7 +239,7 @@ function Dashboard() {
                 >
                   <span
                     className={`flex h-5 w-5 shrink-0 items-center justify-center rounded-[6px] border text-[12px] font-bold transition ${
-                      done ? "border-ember bg-ember text-[#1a0e08]" : "border-ink-faint bg-surface-2 text-transparent"
+                      done ? "border-accent bg-accent text-[#0a0a0b]" : "border-ink-faint bg-surface-2 text-transparent"
                     }`}
                   >
                     ✓
@@ -228,7 +251,55 @@ function Dashboard() {
           })}
         </ul>
       </Panel>
+
+      <Panel title="Sommeil, énergie, stress" delay={280}>
+        <WellbeingRow label="Sommeil" value={wb.sleep} onChange={(v) => setWellbeing(iso, { sleep: v })} lowLabel="mauvais" highLabel="excellent" />
+        <WellbeingRow label="Énergie" value={wb.energy} onChange={(v) => setWellbeing(iso, { energy: v })} lowLabel="épuisé" highLabel="au top" />
+        <WellbeingRow label="Stress" value={wb.stress} onChange={(v) => setWellbeing(iso, { stress: v })} lowLabel="calme" highLabel="sous pression" />
+        <p className="mt-1 text-[11px] text-ink-faint">
+          Une note de 1 à 5 par jour suffit — la corrélation avec ta courbe de poids apparaît dans l'onglet Progrès.
+        </p>
+      </Panel>
     </>
+  );
+}
+
+function WellbeingRow({
+  label,
+  value,
+  onChange,
+  lowLabel,
+  highLabel,
+}: {
+  label: string;
+  value: number | null;
+  onChange: (v: number) => void;
+  lowLabel: string;
+  highLabel: string;
+}) {
+  return (
+    <div className="mb-3.5 last:mb-0">
+      <div className="mb-1.5 flex items-center justify-between">
+        <span className="text-[12px] text-ink-dim">{label}</span>
+        <span className="font-mono text-[11px] text-ink-faint">
+          {lowLabel} → {highLabel}
+        </span>
+      </div>
+      <div className="flex gap-1.5">
+        {[1, 2, 3, 4, 5].map((n) => (
+          <button
+            key={n}
+            type="button"
+            onClick={() => onChange(n)}
+            className={`flex-1 rounded-[9px] border py-2 font-mono text-[12px] transition ${
+              value === n ? "border-accent bg-accent text-[#0a0a0b] font-semibold" : "border-line bg-surface-2 text-ink-faint"
+            }`}
+          >
+            {n}
+          </button>
+        ))}
+      </div>
+    </div>
   );
 }
 

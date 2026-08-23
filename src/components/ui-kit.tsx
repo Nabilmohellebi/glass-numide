@@ -21,7 +21,7 @@ export function Panel({
       {title && (
         <header className="mb-3 flex items-center justify-between gap-3">
           <h2 className="display flex items-center gap-2 text-[12px] tracking-[0.12em] text-ink-dim">
-            <span className="inline-block h-1.5 w-1.5 rounded-[1px] bg-ember" />
+            <span className="inline-block h-1.5 w-1.5 rounded-[1px] bg-accent" />
             {title}
           </h2>
           {action}
@@ -39,10 +39,10 @@ export function Plate({
 }: {
   value: ReactNode;
   label: string;
-  tone?: "ink" | "ember" | "good" | "warn";
+  tone?: "ink" | "accent" | "good" | "warn";
 }) {
   const color =
-    tone === "ember" ? "text-ember" : tone === "good" ? "text-good" : tone === "warn" ? "text-warn" : "text-ink";
+    tone === "accent" ? "text-accent" : tone === "good" ? "text-good" : tone === "warn" ? "text-warn" : "text-ink";
   return (
     <div className="rounded-[10px] border border-line bg-surface-2 px-1.5 py-2.5 text-center">
       <div className={cn("font-mono text-[15px] font-semibold", color)}>{value}</div>
@@ -56,7 +56,7 @@ export function Bar({
   max,
   label,
   unit,
-  color = "var(--color-ember)",
+  color = "var(--color-accent)",
 }: {
   value: number;
   max: number;
@@ -106,7 +106,7 @@ export function Button({
   const base =
     "display rounded-[10px] px-4 py-2.5 text-[13px] font-semibold transition active:scale-[0.98] disabled:opacity-40";
   const styles = {
-    solid: "bg-ember text-[#1a0e08]",
+    solid: "bg-accent text-[#0a0a0b]",
     ghost: "border border-line bg-surface-2 text-ink-dim",
     quiet: "text-ink-faint",
   }[variant];

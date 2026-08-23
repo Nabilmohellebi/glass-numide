@@ -67,7 +67,7 @@ export function RestTimer() {
               cy="20"
               r="17"
               fill="none"
-              stroke="var(--color-ember)"
+              stroke="var(--color-accent)"
               strokeWidth="4"
               strokeLinecap="round"
               strokeDasharray={`${2 * Math.PI * 17 * pct} ${2 * Math.PI * 17}`}
@@ -81,7 +81,7 @@ export function RestTimer() {
               key={sec}
               type="button"
               onClick={() => start(sec)}
-              className="flex-1 rounded-[9px] border border-line bg-surface-2 py-2 font-mono text-[11px] text-ink-dim active:border-ember"
+              className="flex-1 rounded-[9px] border border-line bg-surface-2 py-2 font-mono text-[11px] text-ink-dim active:border-accent"
             >
               {sec}s
             </button>

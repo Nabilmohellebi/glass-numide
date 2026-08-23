@@ -227,3 +227,42 @@ export function todayWorkout(s: AppState, dayName: string) {
   const key = split.week[dayName];
   return { split, key };
 }
+
+// ---------- Bien-être ----------
+
+/** Corrélation simple (Pearson) entre une note bien-être et la variation de poids du jour suivant. */
+export function wellbeingCorrelation(
+  s: AppState,
+  metric: "sleep" | "energy" | "stress",
+): { r: number | null; n: number } {
+  const dates = Object.keys(s.wellbeing).sort();
+  const pairs: [number, number][] = [];
+  for (const d of dates) {
+    const v = s.wellbeing[d]?.[metric];
+    if (v == null) continue;
+    const next = new Date(isoToDate(d).getTime() + 86_400_000).toLocaleDateString("sv-SE");
+    const w0 = s.weights[d];
+    const w1 = s.weights[next];
+    if (w0 == null || w1 == null) continue;
+    pairs.push([v, w1 - w0]);
+  }
+  if (pairs.length < 4) return { r: null, n: pairs.length };
+  const n = pairs.length;
+  const mx = pairs.reduce((a, [x]) => a + x, 0) / n;
+  const my = pairs.reduce((a, [, y]) => a + y, 0) / n;
+  let sxy = 0,
+    sxx = 0,
+    syy = 0;
+  for (const [x, y] of pairs) {
+    sxy += (x - mx) * (y - my);
+    sxx += (x - mx) ** 2;
+    syy += (y - my) ** 2;
+  }
+  if (sxx === 0 || syy === 0) return { r: null, n };
+  return { r: sxy / Math.sqrt(sxx * syy), n };
+}
+
+export function last14Wellbeing(s: AppState) {
+  const dates = Object.keys(s.wellbeing).sort().slice(-14);
+  return dates.map((d) => ({ iso: d, ...s.wellbeing[d]! }));
+}

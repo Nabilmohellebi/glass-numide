@@ -35,6 +35,28 @@ export type Profile = {
   startDate: string;
 };
 
+/** Aliment personnel, valeurs toujours exprimées pour 100 g / 100 ml. */
+export type CustomFood = {
+  id: string;
+  name: string;
+  kcal100: number;
+  prot100: number;
+  carbs100: number;
+  fat100: number;
+};
+
+export type Wellbeing = { sleep: number | null; energy: number | null; stress: number | null };
+
+export type Reminders = {
+  enabled: boolean;
+  water: boolean;
+  weighIn: boolean;
+  workout: boolean;
+  weighInTime: string; // "HH:MM"
+  waterTimes: string[]; // ["10:00","14:00","18:00"]
+  workoutTime: string;
+};
+
 export type AppState = {
   version: number;
   profile: Profile | null;
@@ -49,7 +71,21 @@ export type AppState = {
   /** ISO date -> séance du jour */
   sessions: Record<string, SessionLog>;
   notes: Record<string, string>;
+  customFoods: Record<string, CustomFood>;
+  /** ISO date -> notation sommeil/énergie/stress */
+  wellbeing: Record<string, Wellbeing>;
+  reminders: Reminders;
 };
+
+export const defaultReminders = (): Reminders => ({
+  enabled: false,
+  water: true,
+  weighIn: true,
+  workout: true,
+  weighInTime: "07:30",
+  waterTimes: ["10:00", "14:00", "18:00"],
+  workoutTime: "17:30",
+});
 
 export const emptyState = (): AppState => ({
   version: SCHEMA_VERSION,
@@ -63,6 +99,9 @@ export const emptyState = (): AppState => ({
   meals: {},
   sessions: {},
   notes: {},
+  customFoods: {},
+  wellbeing: {},
+  reminders: defaultReminders(),
 });
 
 function read(): AppState {
@@ -71,7 +110,12 @@ function read(): AppState {
     const raw = localStorage.getItem(STORE_KEY);
     if (!raw) return emptyState();
     const parsed = JSON.parse(raw) as Partial<AppState>;
-    return { ...emptyState(), ...parsed, version: SCHEMA_VERSION };
+    return {
+      ...emptyState(),
+      ...parsed,
+      reminders: { ...defaultReminders(), ...(parsed.reminders ?? {}) },
+      version: SCHEMA_VERSION,
+    };
   } catch {
     return emptyState();
   }
@@ -239,5 +283,40 @@ export function finishSession(iso: string, dayKey: string, split: "simple" | "fu
 export function setNote(iso: string, text: string) {
   update((s) => {
     s.notes = { ...s.notes, [iso]: text };
+  });
+}
+
+// ---------- Aliments personnels (saisie aux 100 g) ----------
+
+export function saveCustomFood(food: Omit<CustomFood, "id"> & { id?: string }) {
+  const id = food.id ?? `${Date.now()}-${Math.random().toString(36).slice(2, 7)}`;
+  update((s) => {
+    s.customFoods = { ...s.customFoods, [id]: { ...food, id } };
+  });
+  return id;
+}
+
+export function removeCustomFood(id: string) {
+  update((s) => {
+    const next = { ...s.customFoods };
+    delete next[id];
+    s.customFoods = next;
+  });
+}
+
+// ---------- Bien-être (sommeil / énergie / stress) ----------
+
+export function setWellbeing(iso: string, patch: Partial<Wellbeing>) {
+  update((s) => {
+    const prev = s.wellbeing[iso] ?? { sleep: null, energy: null, stress: null };
+    s.wellbeing = { ...s.wellbeing, [iso]: { ...prev, ...patch } };
+  });
+}
+
+// ---------- Rappels ----------
+
+export function setReminders(patch: Partial<Reminders>) {
+  update((s) => {
+    s.reminders = { ...s.reminders, ...patch };
   });
 }

@@ -24,18 +24,18 @@ export function Shell({ children }: { children: ReactNode }) {
     <div className="relative mx-auto min-h-screen w-full max-w-[480px] pb-[calc(78px+env(safe-area-inset-bottom))]">
       <header className="sticky top-0 z-20 flex items-baseline justify-between bg-gradient-to-b from-bg via-bg to-transparent px-5 pt-4 pb-2.5">
         <Link href="/" className="display text-[15px] font-bold tracking-[0.16em] text-ink-dim">
-          LE <span className="text-ember">CADRAN</span>
+          LE <span className="text-accent">CADRAN</span>
         </Link>
         <div className="flex items-center gap-2.5">
           {days > 1 && (
-            <span className="font-mono text-[11px] text-ember" title="Jours consécutifs">
+            <span className="font-mono text-[11px] text-accent" title="Jours consécutifs">
               {days} j
             </span>
           )}
           <span className="font-mono text-[11px] text-ink-faint capitalize">{date}</span>
           <Link
             href="/reglages"
-            className={cn("text-ink-faint transition", loc === "/reglages" && "text-ember")}
+            className={cn("text-ink-faint transition", loc === "/reglages" && "text-accent")}
             aria-label="Réglages"
           >
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8">
@@ -58,7 +58,7 @@ export function Shell({ children }: { children: ReactNode }) {
               href={t.href}
               className={cn(
                 "flex flex-1 flex-col items-center gap-1 py-2.5 transition",
-                active ? "text-ember" : "text-ink-faint",
+                active ? "text-accent" : "text-ink-faint",
               )}
             >
               <Icon />

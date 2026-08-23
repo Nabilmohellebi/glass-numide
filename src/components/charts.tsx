@@ -59,7 +59,7 @@ export function WeightChart({ s, height = 190 }: { s: AppState; height?: number 
         y1={y(profile.startWeight)}
         x2={xd(targetEndDays)}
         y2={y(targetEndWeight)}
-        stroke="var(--color-steel)"
+        stroke="var(--color-ink-dim)"
         strokeWidth="1.5"
         strokeDasharray="4 4"
       />
@@ -69,13 +69,13 @@ export function WeightChart({ s, height = 190 }: { s: AppState; height?: number 
       <polyline
         points={realPoints.join(" ")}
         fill="none"
-        stroke="var(--color-ember)"
+        stroke="var(--color-accent)"
         strokeWidth="2.2"
         strokeLinejoin="round"
         strokeLinecap="round"
       />
       {dates.map((d) => (
-        <circle key={d} cx={x(d)} cy={y(s.weights[d]!)} r="2.2" fill="var(--color-ember)" />
+        <circle key={d} cx={x(d)} cy={y(s.weights[d]!)} r="2.2" fill="var(--color-accent)" />
       ))}
     </svg>
   );
@@ -84,7 +84,7 @@ export function WeightChart({ s, height = 190 }: { s: AppState; height?: number 
 export function MiniChart({
   points,
   height = 90,
-  color = "var(--color-steel)",
+  color = "var(--color-ink-dim)",
 }: {
   points: { iso: string; v: number }[];
   height?: number;
@@ -127,7 +127,7 @@ export function VolumeBars({ data }: { data: [string, number][] }) {
         <div key={iso} className="flex flex-1 flex-col items-center gap-1">
           <span className="font-mono text-[9px] text-ink-faint">{Math.round(v / 100) / 10}k</span>
           <div
-            className="w-full rounded-t-[4px] bg-gradient-to-t from-ember-dim to-ember transition-all"
+            className="w-full rounded-t-[4px] bg-gradient-to-t from-accent/50 to-accent transition-all"
             style={{ height: `${Math.max(4, (v / max) * 78)}px` }}
           />
           <span className="font-mono text-[8.5px] text-ink-faint">

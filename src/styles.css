@@ -1,25 +1,25 @@
-@import url("https://fonts.googleapis.com/css2?family=Oswald:wght@500;600;700&family=Manrope:wght@400;500;600;700&family=JetBrains+Mono:wght@500;600&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=Archivo:wght@500;600;700;800&family=Manrope:wght@400;500;600;700&family=JetBrains+Mono:wght@500;600&display=swap");
 @import "tailwindcss";
 
 @theme {
-  --color-bg: #131518;
-  --color-surface: #1b1e23;
-  --color-surface-2: #242930;
-  --color-line: #333941;
-  --color-ink: #ece8df;
-  --color-ink-dim: #9aa1aa;
-  --color-ink-faint: #6b717a;
-  --color-ember: #ff5a2b;
-  --color-ember-dim: #c94420;
-  --color-steel: #7c8894;
-  --color-good: #4fae7b;
-  --color-warn: #e2b93b;
+  --color-bg: #0a0a0b;
+  --color-surface: #141416;
+  --color-surface-2: #1c1c1f;
+  --color-surface-3: #242427;
+  --color-line: #2a2a2e;
+  --color-ink: #f5f5f4;
+  --color-ink-dim: #9a9a9d;
+  --color-ink-faint: #616164;
+  --color-accent: #ffffff;
+  --color-good: #7ee0a8;
+  --color-warn: #f0c46a;
+  --color-bad: #f0776a;
 
-  --font-display: "Oswald", ui-sans-serif, system-ui, sans-serif;
+  --font-display: "Archivo", ui-sans-serif, system-ui, sans-serif;
   --font-sans: "Manrope", ui-sans-serif, system-ui, sans-serif;
   --font-mono: "JetBrains Mono", ui-monospace, monospace;
 
-  --radius-panel: 16px;
+  --radius-panel: 22px;
 }
 
 @layer base {
@@ -69,7 +69,8 @@
 @utility display {
   font-family: var(--font-display);
   text-transform: uppercase;
-  letter-spacing: 0.04em;
+  letter-spacing: -0.04em;
+  font-weight: 700;
 }
 
 @utility panel {
@@ -81,7 +82,7 @@
 @utility field {
   background: var(--color-surface-2);
   border: 1px solid var(--color-line);
-  border-radius: 10px;
+  border-radius: 12px;
   padding: 10px 12px;
   font-family: var(--font-mono);
   color: var(--color-ink);
@@ -90,7 +91,26 @@
 }
 
 .field:focus {
-  border-color: var(--color-ember);
+  border-color: var(--color-accent);
+}
+
+/* Pilule blanche — sélection active (jour, split, onglet) */
+@utility pill {
+  border-radius: 999px;
+  font-family: var(--font-mono);
+  transition: all 0.15s ease;
+}
+
+@utility pill-active {
+  background: var(--color-accent);
+  color: #0a0a0b;
+  font-weight: 600;
+}
+
+@utility pill-idle {
+  background: var(--color-surface-2);
+  border: 1px solid var(--color-line);
+  color: var(--color-ink-dim);
 }
 
 /* ---------- Animations ---------- */

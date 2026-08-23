@@ -2,6 +2,7 @@ import { Route, Switch } from "wouter";
 import { Shell } from "./components/shell";
 import { Onboarding } from "./components/onboarding";
 import { useStore } from "./lib/store";
+import { useReminders } from "./hooks/use-reminders";
 import Dashboard from "./pages/dashboard";
 import NutritionPage from "./pages/nutrition";
 import WorkoutPage from "./pages/workout";
@@ -11,6 +12,7 @@ import SettingsPage from "./pages/settings";
 
 function App() {
   const s = useStore();
+  useReminders();
 
   if (!s.profile) return <Onboarding />;
 

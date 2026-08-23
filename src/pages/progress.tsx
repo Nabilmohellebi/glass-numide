@@ -8,6 +8,7 @@ import {
   currentWeight,
   dayCount,
   fmt,
+  last14Wellbeing,
   movingAverage,
   plateauDays,
   projectionDate,
@@ -15,6 +16,7 @@ import {
   streak,
   weeklyRate,
   weeklyVolumes,
+  wellbeingCorrelation,
 } from "../lib/calc";
 
 function ProgressPage() {
@@ -40,6 +42,9 @@ function ProgressPage() {
     volumes.length > 1 && volumes[0]![1] > 0
       ? ((volumes[volumes.length - 1]![1] - volumes[0]![1]) / volumes[0]![1]) * 100
       : null;
+  const wbHistory = last14Wellbeing(s);
+  const sleepCorr = wellbeingCorrelation(s, "sleep");
+  const stressCorr = wellbeingCorrelation(s, "stress");
 
   return (
     <>
@@ -49,9 +54,9 @@ function ProgressPage() {
       <Panel title="Courbe de poids">
         <WeightChart s={s} />
         <div className="mt-2 flex flex-wrap gap-x-4 gap-y-1 text-[10.5px] text-ink-faint">
-          <Legend color="var(--color-ember)" label="Poids réel" />
+          <Legend color="var(--color-accent)" label="Poids réel" />
           <Legend color="rgba(236,232,223,.55)" label="Moyenne 7 j" />
-          <Legend color="var(--color-steel)" label="Trajectoire cible (0,7 kg/sem)" />
+          <Legend color="var(--color-ink-dim)" label="Trajectoire cible (0,7 kg/sem)" />
         </div>
       </Panel>
 
@@ -59,7 +64,7 @@ function ProgressPage() {
         <div className="grid grid-cols-3 gap-2">
           <Plate value={`${fmt(Math.max(0, profile.startWeight - now))}`} label="kg perdus" tone="good" />
           <Plate value={`${fmt(Math.max(0, now - profile.goal))}`} label="kg restants" />
-          <Plate value={rate ? fmt(rate) : "—"} label="kg / semaine" tone="ember" />
+          <Plate value={rate ? fmt(rate) : "—"} label="kg / semaine" tone="accent" />
           <Plate value={avg7 ? fmt(avg7) : "—"} label="moy. 7 j" />
           <Plate value={avg30 ? fmt(avg30) : "—"} label="moy. 30 j" />
           <Plate value={eta ? eta.toLocaleDateString("fr-FR", { month: "short", year: "numeric" }) : "—"} label="objectif atteint" />
@@ -125,6 +130,41 @@ function ProgressPage() {
         )}
       </Panel>
 
+      <Panel title="Sommeil, énergie, stress" delay={165}>
+        {wbHistory.length === 0 ? (
+          <Empty>Note ton sommeil, ton énergie et ton stress chaque jour sur le Cadran pour voir apparaître la tendance ici.</Empty>
+        ) : (
+          <>
+            <div className="flex items-end gap-1">
+              {wbHistory.map((d) => (
+                <div key={d.iso} className="flex flex-1 flex-col items-center gap-1">
+                  <div className="flex h-[54px] w-full items-end">
+                    <MiniBar value={d.sleep} color="var(--color-accent)" />
+                  </div>
+                  <span className="font-mono text-[8px] text-ink-faint">{d.iso.slice(8, 10)}</span>
+                </div>
+              ))}
+            </div>
+            <p className="mt-2 text-[11px] text-ink-faint">Sommeil noté sur les 14 derniers jours (1 à 5).</p>
+            {sleepCorr.r !== null && (
+              <p className="mt-2 text-[12px] text-ink-dim">
+                {sleepCorr.r < -0.3
+                  ? "Corrélation nette : les nuits que tu notes mal précèdent des jours où le poids remonte davantage. Le sommeil est un vrai levier ici."
+                  : sleepCorr.r > 0.3
+                    ? "Pas de signal inquiétant sur le sommeil pour l'instant."
+                    : "Pas de corrélation claire pour l'instant entre sommeil et poids — continue à noter, le signal se précise avec plus de jours."}
+              </p>
+            )}
+            {stressCorr.r !== null && stressCorr.r > 0.3 && (
+              <p className="mt-1 text-[12px] text-warn">
+                Le stress élevé coïncide avec une reprise de poids sur tes données ({stressCorr.n} jours comparés).
+                Vérifie le sommeil et l'hydratation les jours de forte charge.
+              </p>
+            )}
+          </>
+        )}
+      </Panel>
+
       <Panel title="Historique des pesées" delay={180}>
         {dates.length === 0 ? (
           <Empty>Aucune pesée enregistrée.</Empty>
@@ -147,6 +187,16 @@ function ProgressPage() {
         )}
       </Panel>
     </>
+  );
+}
+
+function MiniBar({ value, color }: { value: number | null; color: string }) {
+  if (value == null) return <div className="w-full rounded-[3px] bg-surface-2" style={{ height: "6px" }} />;
+  return (
+    <div
+      className="w-full rounded-[3px]"
+      style={{ height: `${Math.max(6, (value / 5) * 100)}%`, background: color, opacity: 0.35 + value * 0.13 }}
+    />
   );
 }
 

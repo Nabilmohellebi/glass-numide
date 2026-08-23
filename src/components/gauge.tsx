@@ -43,7 +43,7 @@ export function Gauge({ pct, size = 132 }: { pct: number; size?: number }) {
         y1={(cy + inner * Math.sin(a)).toFixed(1)}
         x2={(cx + outer * Math.cos(a)).toFixed(1)}
         y2={(cy + outer * Math.sin(a)).toFixed(1)}
-        stroke={major ? "var(--color-steel)" : "var(--color-line)"}
+        stroke={major ? "var(--color-ink-dim)" : "var(--color-line)"}
         strokeWidth={major ? 2 : 1.4}
         strokeLinecap="round"
       />,
@@ -57,9 +57,9 @@ export function Gauge({ pct, size = 132 }: { pct: number; size?: number }) {
   return (
     <svg width={size} height={size} viewBox="0 0 120 120" className="shrink-0">
       <defs>
-        <linearGradient id="emberGrad" x1="0" y1="0" x2="1" y2="1">
-          <stop offset="0%" stopColor="#ff8a4b" />
-          <stop offset="100%" stopColor="#ff3d1f" />
+        <linearGradient id="accentGrad" x1="0" y1="0" x2="1" y2="1">
+          <stop offset="0%" stopColor="#ffffff" />
+          <stop offset="100%" stopColor="#c8c8ca" />
         </linearGradient>
       </defs>
       <circle
@@ -78,7 +78,7 @@ export function Gauge({ pct, size = 132 }: { pct: number; size?: number }) {
         cy={cy}
         r={r}
         fill="none"
-        stroke="url(#emberGrad)"
+        stroke="url(#accentGrad)"
         strokeWidth={9}
         strokeDasharray={`${dashTotal * anim} ${circumference}`}
         strokeLinecap="round"

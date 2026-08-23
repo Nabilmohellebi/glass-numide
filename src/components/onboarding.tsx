@@ -35,7 +35,7 @@ export function Onboarding() {
         <Gauge pct={0.62} size={104} />
         <div>
           <h1 className="display text-[26px] leading-[1.1]">
-            Le <span className="text-ember">Cadran</span>
+            Le <span className="text-accent">Cadran</span>
           </h1>
           <p className="mt-1 text-[13px] text-ink-dim">
             Perdre du gras, garder — et gagner — du muscle. Un instrument, pas une application de plus.

@@ -42,15 +42,40 @@ Une fois l'URL Vercel ouverte dans le navigateur du téléphone :
 
 ```
 src/
-  lib/            programme (phases, séances, aliments), store localStorage, calculs dérivés
+  lib/            programme (phases, séances, aliments), store localStorage, calculs dérivés,
+                  dépense énergétique (BMR + activité), rappels (Notification API)
   components/     cadran SVG, minuteur de repos, graphiques, coque (barre + onglets), UI kit
   pages/          Cadran, Repas, Séance, Progrès, Guide, Réglages
 ```
 
+## Fonctionnalités
+
+- **Cadran** : poids du jour, % de progression, dépense estimée (Mifflin-St Jeor + pas +
+  volume de séance) et déficit réel affichés en grand, checklist, notation quotidienne
+  sommeil / énergie / stress.
+- **Repas** : base d'aliments courants + tes propres aliments enregistrés aux 100 g, avec
+  calcul automatique de la portion selon le grammage réel saisi.
+- **Séance** : split 3 j ou 6 j (PPL), saisie des séries, dernière performance affichée
+  pour progresser, minuteur de repos.
+- **Progrès** : courbe de poids réelle vs trajectoire cible, volume soulevé par semaine,
+  corrélation entre sommeil/stress notés et variation de poids du lendemain.
+- **Réglages** : profil, rappels (pesée, eau, séance) via notifications du navigateur —
+  tant que l'app reste ouverte, aucun serveur push —, export/import JSON.
+
+Thème monochrome (fond quasi-noir `#0A0A0B`, blanc comme unique accent), typographie
+Archivo/Manrope/JetBrains Mono, cartes bento.
+
 ## Sauvegarder / transférer tes données
 
-Onglet **Réglages** → "Exporter (.json)" télécharge toutes tes données. "Importer" les
-recharge sur un autre appareil ou après un changement de navigateur.
+Onglet **Réglages** → "Exporter (.json)" télécharge toutes tes données (y compris aliments
+perso et notations bien-être). "Importer" les recharge sur un autre appareil ou après un
+changement de navigateur.
+
+## Notifications
+
+Les rappels utilisent l'API `Notification` du navigateur — pas de service worker, pas de
+serveur push : ils ne se déclenchent que si l'onglet ou l'app (installée sur l'écran
+d'accueil) reste ouvert(e) en arrière-plan. C'est un choix délibéré pour rester 100 % local.
 
 ---
 Programme général basé sur l'équation de Mifflin-St Jeor et les recommandations usuelles

@@ -35,7 +35,7 @@ function WorkoutPage() {
             type="button"
             onClick={() => setSplit(k)}
             className={`flex-1 rounded-[10px] border py-2.5 text-[12.5px] transition ${
-              s.split === k ? "border-ember bg-ember/10 text-ink" : "border-line bg-surface-2 text-ink-dim"
+              s.split === k ? "border-accent bg-accent/10 text-ink" : "border-line bg-surface-2 text-ink-dim"
             }`}
           >
             {SPLITS[k].label}
@@ -55,14 +55,14 @@ function WorkoutPage() {
               onClick={() => setDay(d)}
               className={`shrink-0 rounded-full border px-3 py-1.5 font-mono text-[11px] transition ${
                 active
-                  ? "border-ember bg-ember font-semibold text-[#1a0e08]"
+                  ? "border-accent bg-accent font-semibold text-[#0a0a0b]"
                   : rest
                     ? "border-line bg-surface text-ink-faint"
                     : "border-line bg-surface-2 text-ink-dim"
               }`}
             >
               {d.slice(0, 3)}
-              {d === todayName && <span className={active ? "text-[#1a0e08]" : "text-ember"}> •</span>}
+              {d === todayName && <span className={active ? "text-[#0a0a0b]" : "text-accent"}> •</span>}
             </button>
           );
         })}
@@ -78,7 +78,7 @@ function WorkoutPage() {
                 : "Marche 45 à 60 min + 5 min de gainage."}
           </p>
           <div className="mt-3 grid grid-cols-2 gap-2">
-            <Plate value={stepTarget(s).toLocaleString("fr-FR")} label="pas visés" tone="ember" />
+            <Plate value={stepTarget(s).toLocaleString("fr-FR")} label="pas visés" tone="accent" />
             <Plate value={`${sessionsThisWeek(s)}`} label="séances cette semaine" />
           </div>
         </Panel>
@@ -164,13 +164,13 @@ function ExoRow({
           <div className="text-[14px] font-medium">{exo.n}</div>
           {exo.note && <div className="mt-0.5 text-[11px] text-ink-faint">{exo.note}</div>}
         </div>
-        <div className="shrink-0 font-mono text-[12px] text-steel">
+        <div className="shrink-0 font-mono text-[12px] text-ink-dim">
           {exo.sets} × {exo.reps}
         </div>
       </div>
 
       {lastText && (
-        <div className="mt-1.5 font-mono text-[10.5px] text-ember">
+        <div className="mt-1.5 font-mono text-[10.5px] text-accent">
           dernière fois : {lastText} <span className="text-ink-faint">— bats ça</span>
         </div>
       )}
@@ -193,7 +193,7 @@ function SetInput({ value, bw, onChange }: { value?: SetLog; bw?: boolean; onCha
   return (
     <div
       className={`flex items-center gap-0.5 rounded-[9px] border px-1.5 py-1 ${
-        filled ? "border-ember/60 bg-ember/8" : "border-line bg-surface-2"
+        filled ? "border-accent/60 bg-accent/8" : "border-line bg-surface-2"
       }`}
     >
       {!bw && (

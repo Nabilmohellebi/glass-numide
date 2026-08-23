@@ -34,9 +34,16 @@ vercel --prod # mise en ligne définitive
 
 ## Installer sur ton téléphone
 
-Une fois l'URL Vercel ouverte dans le navigateur du téléphone :
-- **Android (Chrome)** : menu ⋮ → "Ajouter à l'écran d'accueil".
-- **iPhone (Safari)** : bouton Partager → "Sur l'écran d'accueil".
+L'app est une vraie PWA installable (manifest + icônes + service worker) : une bannière
+"Installer Le Cadran" apparaît directement sur le tableau de bord.
+
+- **Android (Chrome)** : appuie sur "Installer" dans la bannière — invite native du
+  navigateur, l'app s'ajoute à l'écran d'accueil et s'ouvre en plein écran.
+- **iPhone (Safari)** : Safari ne propose pas d'invite automatique (limitation d'Apple).
+  La bannière affiche les 3 étapes : Partager → "Sur l'écran d'accueil" → "Ajouter".
+
+Si la bannière a été fermée, le bouton "Installer l'application" reste disponible dans
+l'onglet **Réglages**.
 
 ## Structure
 
